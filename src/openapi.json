@@ -1,0 +1,109 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Сервер времени",
+    "description": "Простой API, который возвращает текущие дату и время сервера. Документация оформлена по лучшим практикам: чёткие схемы, форматы, примеры и версии API.",
+    "version": "1.0.0",
+    "license": { "name": "ISC" }
+  },
+  "servers": [
+    { "url": "http://localhost:3000", "description": "Локальный сервер разработки" }
+  ],
+  "tags": [
+    { "name": "Time", "description": "Операции, связанные со временем сервера" },
+    { "name": "Health", "description": "Здоровье сервиса" }
+  ],
+  "paths": {
+    "/api/v1/time": {
+      "get": {
+        "tags": ["Time"],
+        "summary": "Получить текущее время сервера",
+        "operationId": "getServerTime",
+        "responses": {
+          "200": {
+            "description": "Успешный ответ со временем сервера",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TimeResponse" },
+                "examples": {
+                  "default": {
+                    "summary": "Пример ответа",
+                    "value": {
+                      "iso": "2025-10-06T16:26:00.000Z",
+                      "epochMillis": 1760075160000,
+                      "timezone": "Europe/Moscow",
+                      "utcOffset": "+03:00"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/healthz": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Проверка работоспособности",
+        "operationId": "getHealth",
+        "responses": {
+          "200": {
+            "description": "Сервис работает",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HealthResponse" },
+                "examples": {
+                  "ok": {
+                    "value": { "status": "ok" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TimeResponse": {
+        "type": "object",
+        "description": "Представление времени на сервере.",
+        "required": ["iso", "epochMillis", "timezone", "utcOffset"],
+        "properties": {
+          "iso": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Дата и время в формате ISO 8601 (UTC)."
+          },
+          "epochMillis": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Миллисекунды с 1 января 1970 UTC."
+          },
+          "timezone": {
+            "type": "string",
+            "description": "Часовой пояс сервера в формате IANA (например, Europe/Moscow)."
+          },
+          "utcOffset": {
+            "type": "string",
+            "pattern": "^[+-][0-9]{2}:[0-9]{2}$",
+            "description": "Смещение относительно UTC (часы:минуты)."
+          }
+        }
+      },
+      "HealthResponse": {
+        "type": "object",
+        "required": ["status"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["ok"],
+            "description": "Статус работоспособности сервиса."
+          }
+        }
+      }
+    }
+  }
+}
